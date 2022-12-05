@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,11 +51,15 @@ public class DateInputOperation {
 		
 		Connection connection=null;
 		PreparedStatement psmt=null;
+		PreparedStatement psmt1=null;
+		ResultSet resultset=null;
 		String insertQuery="insert into employe(name,address,gender,dob,doj,dom) values(?,?,?,?,?,?)";
+		String SelectQuey="select * from employe where name=?";
 		try {
 			connection=DriverManager.getConnection(url, username, password);
 			if(connection!=null) {
 				psmt=connection.prepareStatement(insertQuery);
+				psmt1=connection.prepareStatement(SelectQuey);
 				if(psmt!=null)
 				{
 					psmt.setString(1, sname);
@@ -66,6 +71,33 @@ public class DateInputOperation {
 					int result=psmt.executeUpdate();
 					System.out.println("No of rows affected " + result);
 				}
+				if(psmt1!=null)
+				{
+					psmt1.setString(1, sname);
+					resultset=psmt1.executeQuery();
+					
+				}
+				if(resultset!=null)
+				{
+					while(resultset.next()) {
+					String Empname=resultset.getString(1);
+					String Empaddres=resultset.getString(2);
+					String Empgender=resultset.getString(3);
+					java.sql.Date Q=resultset.getDate(4);
+					java.sql.Date w=resultset.getDate(5);
+					java.sql.Date e= resultset.getDate(6);
+					SimpleDateFormat v=new SimpleDateFormat("dd-MM-yyy");
+					SimpleDateFormat v1= new SimpleDateFormat("MM-dd-yyyy");
+					SimpleDateFormat v2= new SimpleDateFormat("yyyy-MM-dd");
+					String EmpD= v.format(Q);
+					String EmpD1=v1.format(w);
+					String EmpD2=v2.format(e);
+					
+					System.out.println(Empname + "\t" + Empaddres + "\t" + Empgender + "\t" + EmpD + "\t" + EmpD1 + "\t" + EmpD2);
+					}
+					
+					
+				}
 			}
 			
 		}catch(SQLException e)
@@ -76,6 +108,10 @@ public class DateInputOperation {
 			if(psmt!=null)
 			{
 				psmt.close();
+			}
+			if(resultset!=null)
+			{
+				resultset.close();
 			}
 			if(connection!=null)
 			{
